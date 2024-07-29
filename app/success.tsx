@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function AnotherPage() {
+export default function Success() {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -11,7 +11,7 @@ export default function AnotherPage() {
 
   return (
     <View style={styles.container}>
-      <Text>Another Page</Text>
+      <Text>Authentication successful</Text>
     </View>
   );
 }

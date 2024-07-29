@@ -1,41 +1,48 @@
+import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
-import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 
 export default function Index() {
-  const [inputText, setInputText] = useState("");
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
     },
-    text: {
-      fontSize: 25,
-    },
-    textInput: {
-      marginTop: 100,
-      padding: 15,
-      borderRadius: 15,
-      borderWidth: 1,
-      width: 300,
-    },
   });
+
+  const authenticate = async () => {
+    const biometricAvailable = await LocalAuthentication.hasHardwareAsync();
+
+    if (!biometricAvailable) {
+      console.error(
+        "Biometric authentication is not available on this device."
+      );
+      return;
+    }
+
+    const enrolled = await LocalAuthentication.isEnrolledAsync();
+
+    if (!enrolled) {
+      console.error("No biometric credentials are enrolled on this device.");
+      return;
+    }
+
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Authenticate to go /success",
+    });
+
+    if (!result.success) {
+      console.error("Authentication failed.");
+      return;
+    }
+
+    router.navigate("/success");
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{inputText}</Text>
-      <TextInput
-        style={styles.textInput}
-        value={inputText}
-        onChangeText={setInputText}
-      />
-      <Button
-        title="Another Page"
-        onPress={() => router.navigate("/another-page")}
-      />
-      <Button title="Modal" onPress={() => router.navigate("/modal")} />
+      <Button title="Authenticate" onPress={authenticate} />
     </View>
   );
 }
